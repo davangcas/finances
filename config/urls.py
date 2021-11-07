@@ -15,9 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('django-admin/', admin.site.urls),
+    path('', include("apps.login.urls")),
     path('finanzas/', include("apps.finanzas.urls")),
     path('negocio/', include("apps.negocio.urls")),
+    path('inventario/', include("apps.inventario.urls")),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if not settings.LOCAL_DEPLOY:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

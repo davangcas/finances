@@ -46,6 +46,11 @@ INSTALLED_APPS = [
     # apps
     'apps.finanzas',
     'apps.negocio',
+    'apps.login',
+    'apps.inventario',
+    # libs
+    'widget_tweaks',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +62,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if HEROKU_DEPLOY:
+    MIDDLEWARE.append('whitenoise.middleware.WhiteNoiseMiddleware')
 
 ROOT_URLCONF = 'config.urls'
 
@@ -82,12 +90,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+if LOCAL_DEPLOY:
+    DATABASES = db.POSTGRES_LOCAL
+elif HEROKU_DEPLOY:
+    DATABASES = db.HEROKU
+else:
+    DATABASES = db.PRODUCTION
 
 
 # Password validation
@@ -126,9 +134,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+if LOCAL_DEPLOY:
+    STATIC_URL = '/static/'
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
+elif HEROKU_DEPLOY:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATIC_URL = '/static/'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# media files root
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# login root
+LOGIN_REDIRECT_URL = 'finanzas/inicio/'
+LOGIN_URL = 'login:login'
+
+# Crispy Config
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
