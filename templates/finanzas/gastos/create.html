@@ -1,0 +1,55 @@
+{% extends 'common/base.html' %}
+{% load static crispy_forms_tags %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+{% endblock %}
+
+{% block content %}
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-default">
+                <div class="card-header">
+                  <h3 class="card-title">Datos necesarios</h3>
+      
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <!-- /.card-header -->
+                <form action="." method="post">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-12">
+                              {{ form.category|as_crispy_field }}
+                              {{ form.date|as_crispy_field }}
+                              {{ form.amount|as_crispy_field }}
+                              {{ form.description|as_crispy_field }}
+                          </div>
+                        <!-- /.row -->
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer text-center">
+                        <button class="btn btn-primary" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+    <script>
+        $('.select2').select2({
+            theme: 'bootstrap4'
+        });
+    </script>
+{% endblock %}
