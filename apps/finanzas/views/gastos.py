@@ -108,7 +108,7 @@ class ExpenseCategoryCreateView(CreateView):
     
     def post(self, request, *args, **kwargs):
         self.object = self.get_object
-        form = self.form_class(request.POST, user=request.user)
+        form = self.form_class(request.POST)
         if form.is_valid():
             income = form.save(commit=False)
             income.user = request.user
@@ -119,7 +119,7 @@ class ExpenseCategoryCreateView(CreateView):
             context = self.get_context_data(**kwargs)
             context['errors'] = form.errors
             return render(request, self.template_name, context)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "Nueva Categoría de Gasto"
