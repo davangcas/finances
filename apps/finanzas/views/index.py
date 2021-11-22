@@ -18,6 +18,5 @@ class IndexView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['title'] = "Inicio"
         context['blue_dollar'] = get_dollar_price()
-        context['ultimo_sueldo'] = Income.objects.filter(category__name="Sueldo").last().amount
         context['month_data'] = MonthlyAudit.objects.last()
         return context
