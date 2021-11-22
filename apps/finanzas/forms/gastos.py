@@ -53,3 +53,21 @@ class ExpenseForm(forms.ModelForm):
     class Meta:
         model = Expense
         fields = ['category', 'amount', 'description', 'date']
+
+class ExpenseCategoryFrom(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'] = forms.CharField(
+            widget=forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+            label="Nombre",
+            required=True,
+        )
+
+    class Meta:
+        model = ExpenseCategory
+        fields = ['name',]

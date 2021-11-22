@@ -1,0 +1,20 @@
+{% extends 'common/list.html' %}
+{% load static %}
+
+{% block table_headers %}
+    <th>Nombre</th>
+    <th>Acciones</th>
+{% endblock %}
+
+{% block table_rows %}
+    <td>{{ obj.name }}</td>
+    <td>
+        <a href="" class="btn btn-primary"><i class="fas fa-pen-square"></i> Editar</a>
+        <a href="" class="btn btn-danger"><i class="fas fa-trash"></i> Eliminar</a>
+    </td>
+{% endblock %}
+
+{% block table_footer %}
+    <th>Nombre</th>
+    <th>Acciones</th>
+{% endblock %}

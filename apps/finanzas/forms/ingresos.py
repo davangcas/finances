@@ -52,3 +52,22 @@ class IncomeForm(forms.ModelForm):
     class Meta:
         model = Income
         fields = ['category', 'amount', 'description', 'date']
+
+
+class IncomeCategoryFrom(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'] = forms.CharField(
+            widget=forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+            label="Nombre",
+            required=True,
+        )
+
+    class Meta:
+        model = IncomeCategory
+        fields = ['name',]
