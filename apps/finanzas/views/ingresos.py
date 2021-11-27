@@ -87,8 +87,10 @@ class IncomeDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
-        update_monthly_audit(request.user, self.object.date.month, self.object.date.year)
+        month = self.object.date.month
+        year = self.object.date.year
         self.object.delete()
+        update_monthly_audit(request.user, month, year)
         return HttpResponseRedirect(success_url)
 
     def get_context_data(self, **kwargs):
