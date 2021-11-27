@@ -23,11 +23,9 @@ def get_total_expenses(user):
     return amount
 
 
-def update_monthly_audit(user):
+def update_monthly_audit(user, month, year):
     expenses = Expense.objects.filter(user=user)
     incomes = Income.objects.filter(user=user)
-    month = datetime.date.today().month
-    year = datetime.date.today().year
     expenses = expenses.filter(date__year=year, date__month=month)
     incomes = incomes.filter(date__year=year, date__month=month)
     total_expenses = 0.0
@@ -42,8 +40,8 @@ def update_monthly_audit(user):
     monthly_balance = total_incomes - total_expenses
 
     monthly_audit = MonthlyAudit.objects.filter(user=user).filter(
-        period__year=datetime.date.today().year, 
-        period__month=datetime.date.today().month
+        period__year=year, 
+        period__month=month,
     )
     monthly_audit = monthly_audit.last()
 

@@ -2,10 +2,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
+from requests.api import delete
 
 from apps.finanzas.models.gastos import Expense, ExpenseCategory
 from apps.finanzas.forms.gastos import ExpenseForm, ExpenseCategoryFrom
-from apps.finanzas.services import get_total_expenses
+from apps.finanzas.services import get_total_expenses, update_monthly_audit
 
 
 class ExpenseCreateView(CreateView):
@@ -21,6 +22,7 @@ class ExpenseCreateView(CreateView):
             expense = form.save(commit=False)
             expense.user = request.user
             expense.save()
+            update_monthly_audit(request.user, expense.date.month, expense.date.year)
             return HttpResponseRedirect(self.get_success_url())
         else:
             self.object = None
@@ -62,6 +64,11 @@ class ExpenseUpdateView(UpdateView):
     form_class = ExpenseForm
     success_url = reverse_lazy('finanzas:gastos')
 
+    def form_valid(self, form):
+        self.object = form.save()
+        update_monthly_audit(self.request.user, self.object.date.month, self.object.date.year)
+        return super().form_valid(form)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
@@ -77,6 +84,13 @@ class ExpenseDeleteView(DeleteView):
     model = Expense
     template_name = "finanzas/gastos/delete.html"
     success_url = reverse_lazy('finanzas:gastos')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        update_monthly_audit(request.user, self.object.date.month, self.object.date.year)
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

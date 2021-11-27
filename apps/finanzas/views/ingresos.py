@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 
 from apps.finanzas.models.ingresos import Income, IncomeCategory
 from apps.finanzas.forms.ingresos import IncomeForm, IncomeCategoryFrom
-from apps.finanzas.services import get_total_expenses
+from apps.finanzas.services import get_total_expenses, update_monthly_audit
 
 
 class IncomeCreateView(CreateView):
@@ -18,9 +18,10 @@ class IncomeCreateView(CreateView):
         self.object = self.get_object
         form = self.form_class(request.POST, user=request.user)
         if form.is_valid():
-            expense = form.save(commit=False)
-            expense.user = request.user
-            expense.save()
+            income = form.save(commit=False)
+            income.user = request.user
+            income.save()
+            update_monthly_audit(request.user, income.date.month, income.date.year)
             return HttpResponseRedirect(self.get_success_url())
         else:
             self.object = None
@@ -44,8 +45,8 @@ class IncomeListView(ListView):
     model = Income
 
     def get_queryset(self):
-        expenses = Income.objects.filter(user=self.request.user)
-        return expenses
+        incomes = Income.objects.filter(user=self.request.user)
+        return incomes
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -62,6 +63,11 @@ class IncomeUpdateView(UpdateView):
     form_class = IncomeForm
     success_url = reverse_lazy('finanzas:ingresos')
 
+    def form_valid(self, form):
+        self.object = form.save()
+        update_monthly_audit(self.request.user, self.object.date.month, self.object.date.year)
+        return super().form_valid(form)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
@@ -77,6 +83,13 @@ class IncomeDeleteView(DeleteView):
     model = Income
     template_name = "finanzas/ingresos/delete.html"
     success_url = reverse_lazy('finanzas:ingresos')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        update_monthly_audit(request.user, self.object.date.month, self.object.date.year)
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
