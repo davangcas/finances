@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure-w+&^0vxmlq!_@*ua-*8yq3nxnmt3)^=9t3oyaqrqw)1&%_$a^a
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-LOCAL_DEPLOY = False
-HEROKU_DEPLOY = True
+LOCAL_DEPLOY = True
+HEROKU_DEPLOY = False
 
 if HEROKU_DEPLOY:
     ALLOWED_HOSTS = ['*']
