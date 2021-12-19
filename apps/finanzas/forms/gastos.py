@@ -18,8 +18,8 @@ class ExpenseForm(forms.ModelForm):
             }),
             label="Categoría",
             required=True,
-            queryset=ExpenseCategory.objects.filter(user=user),
-            initial=ExpenseCategory.objects.filter(user=user).first(),
+            queryset=ExpenseCategory.objects.filter(user=user).order_by('name'),
+            initial=ExpenseCategory.objects.filter(user=user).order_by('name').first(),
         )
         self.fields['amount'] = forms.DecimalField(
             widget=forms.NumberInput(

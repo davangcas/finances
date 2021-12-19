@@ -17,8 +17,8 @@ class IncomeForm(forms.ModelForm):
             }),
             label="Categoría",
             required=True,
-            queryset=IncomeCategory.objects.filter(user=user),
-            initial=IncomeCategory.objects.filter(user=user).first(),
+            queryset=IncomeCategory.objects.filter(user=user).order_by('name'),
+            initial=IncomeCategory.objects.filter(user=user).order_by('name').first(),
         )
         self.fields['amount'] = forms.DecimalField(
             widget=forms.NumberInput(

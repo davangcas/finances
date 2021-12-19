@@ -2,6 +2,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 from apps.finanzas.models.ingresos import Income, IncomeCategory
 from apps.finanzas.forms.ingresos import IncomeForm, IncomeCategoryFrom
@@ -13,6 +15,10 @@ class IncomeCreateView(CreateView):
     model = Income
     form_class = IncomeForm
     success_url = reverse_lazy('finanzas:ingresos')
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object
@@ -44,6 +50,10 @@ class IncomeListView(ListView):
     template_name = "finanzas/ingresos/list.html"
     model = Income
 
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         incomes = Income.objects.filter(user=self.request.user)
         return incomes
@@ -62,6 +72,10 @@ class IncomeUpdateView(UpdateView):
     template_name = "finanzas/ingresos/update.html"
     form_class = IncomeForm
     success_url = reverse_lazy('finanzas:ingresos')
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         self.object = form.save()
@@ -84,6 +98,10 @@ class IncomeDeleteView(DeleteView):
     template_name = "finanzas/ingresos/delete.html"
     success_url = reverse_lazy('finanzas:ingresos')
 
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
         success_url = self.get_success_url()
@@ -103,6 +121,10 @@ class IncomeCategoryList(ListView):
     model = IncomeCategory
     template_name = "finanzas/ingresos/category_list.html"
 
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         incomes = IncomeCategory.objects.filter(user=self.request.user)
         return incomes
@@ -119,6 +141,10 @@ class IncomeCategoryCreateView(CreateView):
     template_name = "finanzas/ingresos/category_create.html"
     success_url = reverse_lazy('finanzas:ingresos_categories')
     form_class = IncomeCategoryFrom
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         self.object = self.get_object
